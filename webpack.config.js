@@ -1,18 +1,19 @@
 'use strict';
- 
+
 const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const autoprefixer = require('autoprefixer');
 
-var webpackConfig = {
+var config = {
   context: path.join(__dirname + '/src'),
   entry: {
     main: './index.js'
   },
   output: {
-    path: path.join(__dirname + '/build/'),
+    path: path.join(__dirname + '/docs/'),
     publicPath: '/',
     filename: "js/[name].js"
   },
@@ -22,10 +23,10 @@ var webpackConfig = {
   module: {
     loaders: [{
       test: /\.css$/,
-      loader: ExtractTextPlugin.extract('style', 'css!autoprefixer')
+      loader: ExtractTextPlugin.extract('style', 'css!postcss')
     }, {
       test: /\.scss$/,
-      loader: ExtractTextPlugin.extract('style', 'css!autoprefixer!sass?sourceMap')
+      loader: ExtractTextPlugin.extract('style', 'css!postcss!sass?sourceMap')
     }, {
       test  : /\.(png|jpg|svg|ttf|ico|eot|woff|woff2)$/,
       loader: 'url?name=[name].[ext]?[hash]&limit=4096'
@@ -52,7 +53,8 @@ var webpackConfig = {
     host: 'localhost',
     port: 3030,
     contentBase:  path.join(__dirname + '/src'),
-    hot: true
+    hot: true,
+    historyApiFallback: true,
   },
 
   plugins: [
@@ -80,4 +82,9 @@ var webpackConfig = {
   },
 };
 
-module.exports = webpackConfig;
+config.postcss = [
+  autoprefixer({
+    browsers: ['last 3 versions', '> 1%']
+})];
+
+module.exports = config;
